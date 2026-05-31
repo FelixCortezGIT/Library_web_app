@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 
 load_dotenv()
@@ -22,7 +22,11 @@ def home():
 
 @app.route("/authors")
 def authors():
-    authors = Author.query.all()
+    search = request.args.get("name", "")
+    if search:
+        authors = Author.query.filter(Author.name.ilike(f"%{search}%")).all()
+    else:
+        authors = Author.query.all()
     return render_template("index.html", authors=authors)
 
 if __name__ == "__main__":
